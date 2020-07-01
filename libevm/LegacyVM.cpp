@@ -8,6 +8,16 @@ using namespace std;
 using namespace dev;
 using namespace dev::eth;
 
+void logInfo (const char* file, int  line,  Instruction& instruction)
+{
+   auto info = instructionInfo(instruction);
+   cout << "[" << file <<":"<< line<<   "]" << info.name << endl;
+}
+#define LOGInstruction(instruction) logInfo( __FILE__, __LINE__, instruction)
+
+
+
+
 uint64_t LegacyVM::memNeed(u256 const& _offset, u256 const& _size)
 {
     return toInt63(_size ? u512(_offset) + _size : u512(0));
@@ -192,6 +202,11 @@ void LegacyVM::fetchInstruction()
     m_OP = Instruction(m_code[m_PC]);
     const InstructionMetric& metric = c_metrics[static_cast<size_t>(m_OP)];
     adjustStack(metric.args, metric.ret);
+
+    /**
+     *  Print instruction info
+     */
+    LOGInstruction(m_OP);
 
     // FEES...
     m_runGas = toInt63(m_schedule->tierStepGas[static_cast<unsigned>(metric.gasPriceTier)]);
@@ -1718,3 +1733,4 @@ void LegacyVM::interpretCases()
     }
     WHILE_CASES
 }
+
