@@ -13,6 +13,7 @@
 #include <libethcore/CommonJS.h>
 #include <libevm/LegacyVM.h>
 #include <libevm/VMFactory.h>
+// #include <libevm/TraceRecorder.h>
 
 using namespace std;
 using namespace dev;
@@ -329,6 +330,7 @@ OnOpFunc Executive::simpleTrace()
 
 bool Executive::go(OnOpFunc const& _onOp)
 {
+ 
     if (m_ext)
     {
 #if ETH_TIMED_EXECUTIONS
@@ -336,6 +338,7 @@ bool Executive::go(OnOpFunc const& _onOp)
 #endif
         try
         {
+   
             // Create VM instance. Force Interpreter if tracing requested.
             auto vm = VMFactory::create();
             if (m_isCreation)
@@ -371,12 +374,15 @@ bool Executive::go(OnOpFunc const& _onOp)
             }
             else
                 m_output = vm->exec(m_gas, *m_ext, _onOp);
+            
+         
         }
         catch (RevertInstruction& _e)
         {
             revert();
             m_output = _e.output();
             m_excepted = TransactionException::RevertInstruction;
+                  
         }
         catch (VMException const& _e)
         {
@@ -384,19 +390,21 @@ bool Executive::go(OnOpFunc const& _onOp)
             m_gas = 0;
             m_excepted = toTransactionException(_e);
             revert();
+    
         }
         catch (InternalVMError const& _e)
         {
             cerror << "Internal VM Error (EVMC status code: "
                  << *boost::get_error_info<errinfo_evmcStatusCode>(_e) << ")";
             revert();
-            throw;
+             throw;
         }
         catch (Exception const& _e)
         {
             // TODO: AUDIT: check that this can never reasonably happen. Consider what to do if it does.
             cerror << "Unexpected exception in VM. There may be a bug in this implementation. "
                  << diagnostic_information(_e);
+     
             exit(1);
             // Another solution would be to reject this transaction, but that also
             // has drawbacks. Essentially, the amount of ram has to be increased here.
@@ -405,7 +413,7 @@ bool Executive::go(OnOpFunc const& _onOp)
         {
             // TODO: AUDIT: check that this can never reasonably happen. Consider what to do if it does.
             cerror << "Unexpected std::exception in VM. Not enough RAM? " << _e.what();
-            exit(1);
+             exit(1);
             // Another solution would be to reject this transaction, but that also
             // has drawbacks. Essentially, the amount of ram has to be increased here.
         }

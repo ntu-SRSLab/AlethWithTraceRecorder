@@ -3,17 +3,18 @@
 // Licensed under the GNU General Public License, Version 3.
 
 #include "LegacyVM.h"
+#include "TraceRecorder.h"
 
 using namespace std;
 using namespace dev;
 using namespace dev::eth;
 
-void logInfo (const char* file, int  line,  Instruction& instruction)
-{
-   auto info = instructionInfo(instruction);
-   cout << "[" << file <<":"<< line<<   "]" << info.name << endl;
-}
-#define LOGInstruction(instruction) logInfo( __FILE__, __LINE__, instruction)
+// void logInfo (const char* file, int  line,  Instruction& instruction)
+// {
+//    auto info = instructionInfo(instruction);
+//    cout << "[" << file <<":"<< line<<   "]" << info.name << endl;
+// }
+// #define LOGInstruction(instruction) logInfo( __FILE__, __LINE__, instruction)
 
 
 
@@ -206,7 +207,9 @@ void LegacyVM::fetchInstruction()
     /**
      *  Print instruction info
      */
-    LOGInstruction(m_OP);
+    // LOGInstruction(m_OP);
+    auto recorder = CreateOrGetOrResetRecorder(TRACE_GET);
+    recorder->addInstruction(instructionInfo(m_OP).name);
 
     // FEES...
     m_runGas = toInt63(m_schedule->tierStepGas[static_cast<unsigned>(metric.gasPriceTier)]);

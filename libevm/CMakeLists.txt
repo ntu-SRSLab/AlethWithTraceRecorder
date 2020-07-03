@@ -9,6 +9,8 @@ set(sources
     LegacyVMOpt.cpp
     VMFace.h
     VMFactory.cpp VMFactory.h
+    httplib.h
+    TraceRecorder.cpp TraceRecorder.h
 )
 
 add_library(evm ${sources})

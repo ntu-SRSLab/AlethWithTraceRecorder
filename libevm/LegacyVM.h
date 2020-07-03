@@ -8,6 +8,7 @@
 #include "LegacyVMConfig.h"
 #include "VMFace.h"
 
+
 namespace dev
 {
 namespace eth
