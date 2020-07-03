@@ -6,6 +6,8 @@
 
 #include <aleth/version.h>
 
+#include <libevm/TraceRecorder.h>
+
 namespace
 {
 void destroy(evmc_vm* _instance)
@@ -217,6 +219,9 @@ void VM::fetchInstruction()
     auto const metric = (*m_metrics)[static_cast<size_t>(m_OP)];
     adjustStack(metric.stack_height_required, metric.stack_height_change);
 
+    auto recorder = CreateOrGetOrResetRecorder(TRACE_GET);
+    recorder->addInstruction(instructionInfo(m_OP).name);
+    
     // FEES...
     m_runGas = metric.gas_cost;
     m_newMemSize = m_mem.size();

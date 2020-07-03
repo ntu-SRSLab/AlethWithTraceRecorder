@@ -22,7 +22,6 @@
 
 
 
-
 namespace dev
 {
 namespace eth
