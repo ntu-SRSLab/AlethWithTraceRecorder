@@ -628,9 +628,11 @@ void State::rollback(size_t _savepoint)
 
 std::pair<ExecutionResult, TransactionReceipt> State::execute(EnvInfo const& _envInfo, SealEngineFace const& _sealEngine, Transaction const& _t, Permanence _p, OnOpFunc const& _onOp)
 {
-    auto  recorder = CreateOrGetOrResetRecorder(TRACE_CREATE);
-    recorder->addTxHash(_t.sha3().hex());
-    recorder->addContractAddress(_t.to().hex());
+    if(_t.hasSignature()){
+            auto  recorder = CreateOrGetOrResetRecorder(TRACE_CREATE);
+            recorder->addTxHash(_t.sha3().hex());
+            recorder->addContractAddress(_t.to().hex());
+    }
     // Create and initialize the executive. This will throw fairly cheaply and quickly if the
     // transaction is bad in any way.
     Executive e(*this, _envInfo, _sealEngine);
@@ -661,8 +663,9 @@ std::pair<ExecutionResult, TransactionReceipt> State::execute(EnvInfo const& _en
     TransactionReceipt const receipt = _envInfo.number() >= _sealEngine.chainParams().byzantiumForkBlock ?
         TransactionReceipt(statusCode, startGasUsed + e.gasUsed(), e.logs()) :
         TransactionReceipt(rootHash(), startGasUsed + e.gasUsed(), e.logs());
-
-    CreateOrGetOrResetRecorder(TRACE_RESET);
+   if(_t.hasSignature()){
+        CreateOrGetOrResetRecorder(TRACE_RESET);
+   }
     return make_pair(res, receipt);
 }
 
