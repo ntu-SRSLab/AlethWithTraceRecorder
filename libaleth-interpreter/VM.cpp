@@ -7,6 +7,7 @@
 #include <aleth/version.h>
 
 #include <libevm/TraceRecorder.h>
+#include <string>
 
 namespace
 {
@@ -220,7 +221,7 @@ void VM::fetchInstruction()
     adjustStack(metric.stack_height_required, metric.stack_height_change);
 
     auto recorder = CreateOrGetOrResetRecorder(TRACE_GET);
-    recorder->addInstruction(instructionInfo(m_OP).name);
+    recorder->addInstruction(std::to_string(m_PC)+instructionInfo(m_OP).name);
     
     // FEES...
     m_runGas = metric.gas_cost;

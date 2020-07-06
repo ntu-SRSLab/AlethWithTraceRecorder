@@ -26,46 +26,48 @@ private:
     std::string contractAddress;
     std::vector<std::string> instructions;    
     bool isRepeated;
+    httplib::Client* m_cli;
 public:
     TraceRecorder(/* args */){
         isRepeated = false;
+        m_cli = new httplib::Client("localhost", 3000);
     }
     ~TraceRecorder(){
-
+        delete m_cli;
     }
      // reset recorder context
      void reset(){
          if(!isRepeated){
-            LOGMSG("reset recorder");
+            // LOGMSG("reset recorder");
             this->sendTrace();
-            this->txHash = "";
-            this->contractAddress = "";
-            this->instructions.clear();
          }
      }
      // add related information to the recorder context;     
      void addInstruction(std::string instruction){
          if(!isRepeated){
-            LOGMSG("add instruction");
+            // LOGMSG("add instruction");
             this->instructions.emplace_back(instruction);
-            LOGMSG(instruction);
+            // LOGMSG(instruction);
          }
      }
      void addTxHash(std::string  txHash){
          if(txHash==this->txHash){
              isRepeated = true;
          }else {
-            LOGMSG("add transaction hash");
+            this->txHash = "";
+            this->contractAddress = "";
+            this->instructions.clear();
+            // LOGMSG("add transaction hash");
             this->txHash = txHash;
-            LOGMSG(txHash);
+            // LOGMSG(txHash);
             isRepeated = false;
          }
      }
      void  addContractAddress(std::string contractAddress){
          if(!isRepeated){
-                LOGMSG("add contract address");
+                // LOGMSG("add contract address");
                 this->contractAddress = contractAddress;
-                LOGMSG(contractAddress);
+                // LOGMSG(contractAddress);
          }
      }
      // network function

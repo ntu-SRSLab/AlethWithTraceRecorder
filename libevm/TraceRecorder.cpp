@@ -1,6 +1,5 @@
 
 #include "TraceRecorder.h"
-#include  <libethereum/StandardTrace.h>
 
 TraceRecorder* CreateOrGetOrResetRecorder(int cmd){
     static TraceRecorder recoder;
@@ -44,8 +43,8 @@ void join(const std::vector<std::string>& v, const char&c, std::string& s) {
 }
 void TraceRecorder::sendTrace(){
     
-         LOGMSG("send trace");
-         LOGTrace(this->txHash, this->contractAddress, this->instructions);
+        //  LOGMSG("send trace");
+        //  LOGTrace(this->txHash, this->contractAddress, this->instructions);
       
          std::string instructions;
          join(this->instructions, ',' , instructions);
@@ -61,18 +60,11 @@ void TraceRecorder::sendTrace(){
                                             "\"trace\":"+instructions+"}";
         LOGMSG(json);
         LOGMSG("will send trace to vultron server");
-        httplib::Client cli("localhost", 3000);
-        auto res = cli.Get("/");
+        auto res = m_cli->Post("/fuzz", json, "application/json");
         if (res && res->status == 200) {
-              LOGMSG("connected to vultron server");
-               res = cli.Post("/fuzz", json, "application/json");
-               if (res && res->status == 200) {
-                   std::cout  << "[" << __FILE__ <<":"<< __LINE__<<   "]" << res->body << std::endl;
-                }else{
-                   std::cerr<< "[" << __FILE__ <<":"<< __LINE__<<   "]" <<"cannot transfer trace info to vultron server" << std::endl;
-              }
+            LOGMSG("connected to vultron server");
+            std::cout  << "[" << __FILE__ <<":"<< __LINE__<<   "]" << res->body << std::endl;
          }else{
-                  std::cerr<< "[" << __FILE__ <<":"<< __LINE__<<   "]" << "cannot connect to vultron server" << std::endl;
-        }
-
+            std::cerr<< "[" << __FILE__ <<":"<< __LINE__<<   "]" <<"cannot transfer trace info to vultron server" << std::endl;
+       }
 }

@@ -4,7 +4,7 @@
 
 #include "LegacyVM.h"
 #include "TraceRecorder.h"
-
+#include <string>
 using namespace std;
 using namespace dev;
 using namespace dev::eth;
@@ -209,7 +209,7 @@ void LegacyVM::fetchInstruction()
      */
     // LOGInstruction(m_OP);
     auto recorder = CreateOrGetOrResetRecorder(TRACE_GET);
-    recorder->addInstruction(instructionInfo(m_OP).name);
+    recorder->addInstruction(std::to_string(m_PC)+instructionInfo(m_OP).name);
 
     // FEES...
     m_runGas = toInt63(m_schedule->tierStepGas[static_cast<unsigned>(metric.gasPriceTier)]);
