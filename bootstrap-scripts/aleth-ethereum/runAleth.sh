@@ -1,5 +1,7 @@
 #!/bin/bash
 # copy web3 keys to home directory
+rm -rf ./Ethereum
+mkdir -p ./Ethereum
 cp -rf keystore ./Ethereum
 cp -rf .web3  ~/
 # run aleth with given configuration
